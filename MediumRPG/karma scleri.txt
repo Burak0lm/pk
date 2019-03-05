@@ -1,0 +1,118 @@
+item craft olayý
+  ("cf_craft_item_stockpile", # server: handle players crafting items at a stockpile
+   [(store_script_param, ":agent_id", 1), # must be valid
+    (store_script_param, ":instance_id", 2), # must be valid
+    (store_script_param, ":skill_1_id", 3),
+    (store_script_param, ":required_level_1", 4),
+    (store_script_param, ":skill_2_id", 5), # an optional alternate skill and level to craft with
+    (store_script_param, ":required_level_2", 6),
+    (store_script_param, ":resource_1_item_id", 7),
+    (store_script_param, ":resource_2_item_id", 8),
+    (store_script_param, ":resource_3_item_id", 9),
+    (store_script_param, ":resource_4_item_id", 10),
+
+    (neq, "$g_game_type", "mt_quick_battle"),
+    (agent_get_player_id, ":player_id", ":agent_id"),
+    (player_is_active, ":player_id"),
+    (scene_prop_get_slot, ":item_id", ":instance_id", slot_scene_prop_item_id),
+    (is_between, ":item_id", all_items_begin, all_items_end),
+    (is_between, ":resource_1_item_id", all_items_begin, all_items_end),
+    (scene_prop_get_slot, ":stock_count", ":instance_id", slot_scene_prop_stock_count),
+    (assign, ":error_string_id", 0),
+    (try_begin),
+      (assign, ":average_level", ":required_level_1"),
+      (try_begin),
+        (le, ":skill_1_id", -1),
+      (else_try),
+        (agent_get_troop_id, ":troop_id", ":agent_id"),
+        (store_skill_level, ":skill_1_level", ":skill_1_id", ":troop_id"),
+        (ge, ":skill_1_level", ":required_level_1"),
+      (else_try),
+        (gt, ":skill_2_id", -1),
+        (store_skill_level, ":skill_2_level", ":skill_2_id", ":troop_id"),
+        (ge, ":skill_2_level", ":required_level_2"),
+        (store_add, ":average_level", ":required_level_1", ":required_level_2"),
+        (val_div, ":average_level", 2),
+      (else_try),
+        (assign, ":error_string_id", "str_craft_not_skilled"),
+      (try_end),
+      (eq, ":error_string_id", 0),
+      (assign, ":error_string_id", "str_craft_wrong_resources"),
+      (call_script, "script_cf_agent_consume_items", ":agent_id", ":resource_1_item_id", ":resource_2_item_id", ":resource_3_item_id", ":resource_4_item_id"),
+      (call_script, "script_scene_prop_get_item_crafting_refund_reward", ":instance_id"),
+      (call_script, "script_player_adjust_gold", ":player_id", reg0, 1),
+      (val_add, ":stock_count", 1),
+      (scene_prop_set_slot, ":instance_id", slot_scene_prop_stock_count, ":stock_count"),
+      (multiplayer_send_3_int_to_player, ":player_id", server_event_scene_prop_set_slot, ":instance_id", slot_scene_prop_stock_count, ":stock_count"),
+      (call_script, "script_scene_prop_get_gold_value", ":instance_id", ":item_id", 0),
+      (assign, ":gold_value", reg0),
+    
+     (try_begin),
+        (gt , ":gold_value" , 10000), #10kdan fazlaysa itemi yapma
+        (scene_prop_set_slot, ":instance_id", slot_scene_prop_stock_count, ":stock_count"),
+        (multiplayer_send_3_int_to_player, ":player_id", server_event_scene_prop_set_slot, ":instance_id", slot_scene_prop_stock_count, ":stock_count"),
+      (else_try),
+        (player_get_agent_id , ":agent_id" , ":player_id"),
+        (agent_is_alive , ":agent_id"),
+        (agent_is_active , ":agent_id"),
+        (item_get_type, ":item_type", ":item_id"),
+        (try_begin),
+              (is_between, ":item_type", itp_type_head_armor, itp_type_hand_armor + 1),
+              (call_script , "script_cf_change_armor",":agent_id",":item_id"),
+        (else_try),
+             (eq , ":item_type" , itp_type_horse),
+              (scene_prop_set_slot, ":instance_id", slot_scene_prop_stock_count, ":stock_count"),
+             (multiplayer_send_3_int_to_player, ":player_id", server_event_scene_prop_set_slot, ":instance_id", slot_scene_prop_stock_count, ":stock_count"),
+        (else_try),
+              (agent_equip_item , ":agent_id" , ":item_id"),
+        (try_end),
+      (try_end),
+    (else_try),
+      (gt, ":error_string_id", 0),
+      (multiplayer_send_2_int_to_player, ":player_id", server_event_preset_message, ":error_string_id", preset_message_yellow|preset_message_fail_sound),
+    (try_end),
+    (eq, ":error_string_id", 0),
+    ]),
+
+
+yaralandýn--
+satýr 16708 de
+(player_set_slot , ":player_id" , slot_player_is_wounded , 1),
+
+açlýk--------
+satýr 16733 de baþlayýp
+16750 de biten
+bi cf_check_starving var
+???? ??Today at 11:45 PM
+evet
+mentalrobToday at 11:45 PM
+module_scripts de
+bak orda
+(store_script_param , ":player_id" , 1),
+          (store_script_param , ":agent_id"  , 2),
+bu ikisi hariç
+diðerlerine # koyarsan
+sorunu çözer
+--------------
+
+mentalrobToday at 11:45 PM
+yada direk mission_templates den
+
+
+---------------
+satýr 256 da baþlayýp
+264 de biten bi kýsým var
+agent_starving_loop = (0, 0, 360,[
+  (try_for_players , ":player_id"),
+      (player_is_active , ":player_id"),
+      (player_get_agent_id , ":agent_id" , ":player_id"),
+      (agent_is_active , ":agent_id"),
+      (agent_is_alive , ":agent_id"),
+      (call_script , "script_cf_check_starving" , ":player_id" , ":agent_id"),
+  (try_end),
+  ] ,[])
+
+
+
+-------
+(call_script , "script_cf_check_starving" , ":player_id" , ":agent_id"),
