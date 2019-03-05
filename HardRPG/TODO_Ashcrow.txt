@@ -1,0 +1,12 @@
+Ashcrow YAPILACAKLAR
+___________________________
+
+Veritabanýna "factions" adýnda tablo oluþturulacak, sütun içerikleri: 
+	*[id], [fac_id], [fac_name], [fac_banner], [lord_uid]
+Veritabanýna "faction_players" adýnda tablo oluþturulacak, "factions" tablosuyla iliþkili olacak. Sütun içerikleri:
+	*[id], [fac_id], [p_guid], [is_marshall], [has_doorkey], [has_moneykey], [has_chestkey], [can_announce]
+
+Modül sisteminden veritabanýnda iþlem yapmaya uygun istekler gönderilecek.
+
+
+(03/10/2018)
