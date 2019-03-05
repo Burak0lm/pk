@@ -1,0 +1,6 @@
+1) Ev sistemi - Oyuncuya özel. 
+Bu bağlamda kapı / yapı içerisinde yer alan kasalar mevcut olcak.
+Sunucuda ki tüm kasaların SQL'e kaydolması - restarttan sonra kaybolmamalarını sağlamak.
+
+2) Global Inventory
+Herkesin erişimi olacak, ama her guide göre veri çekecek. Kasa kullanılırken bir başkası kullanamayacak. ( sana kolaylık olsun diye ) Global İnventory suan kullanılamaktadır uyarısı verir geçer.
