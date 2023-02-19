@@ -1,11 +1,17 @@
 <?php
 if(isset($_GET["pass"])){
-	$pass = $_GET["pass"];
-	$dateNow = date("Y-m-d");
-	$expirationDate = file_get_contents($pass);
-
-	echo ($dateNow > $expirationDate) ? "99|0" : "99|1";
-	return;
+	$dosyaAdi = "xpTIkO1x5H1lUAmJJCTYlkdT9yxVJzSx.txt";
+	$sifre = $_GET['pass'];
+	$bitisTarihi = file_get_contents($dosyaAdi);
+	$tarih = date("Y-m-d");
+	if($sifre . ".txt" == $dosyaAdi){
+		if($tarih < $bitisTarihi){
+			echo "99|1";
+		} else {
+			echo "99|0";
+		}
+	} else {
+		echo "99|0";
+	}
 }
-echo "99|0";
 ?>
